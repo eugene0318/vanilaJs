@@ -53,7 +53,7 @@
           endTime = new Date();
           const current = endTime - startTime;
           records.push(current);
-          console.log(records);
+          //console.log(records);
           const average = records.reduce((a, c) => a + c) / records.length;
           $result.textContent = `현재 ${current}ms, 평균 : ${average}`;
 
