@@ -59,6 +59,14 @@
         hp: 100,
         xp: 0,
         att: 10,
+        attack(monster) {
+          monster.hp -= this.att;
+          this.hp -= monster.att;
+        },
+        heal(monster) {
+          this.hp += 20;
+          this.hp -= monster.att;
+        },
       };
       let monster = null;
       const monsterList = [
@@ -94,6 +102,18 @@
           $monsterName.textContent = monster.name;
           $monsterHp.textContent = `HP: ${monster.hp}/${monster.maxHp}`;
           $monsterAtt.textContent = `ATT: ${monster.att}`;
+
+          const monster1 = JSON.parse(JSON.stringify(monsterList[0]));
+          const monster2 = monsterList[0];
+          const monster3 = { ...monster[0] };
+          const arr = [...arr];
+          monster1.name = "새 몬스터";
+          console.log(monsterList[0].name);
+          monster2.name = "새 몬스터";
+
+          console.log(monsterList[0].name);
+          console.log(monsterList[0].name === monster1); //false. 깊은 복사
+          console.log(monsterList[0].name === monster2); //true. 참조 복사
         } else if (input === "2") {
         } else if (input === "3") {
         }
@@ -102,9 +122,25 @@
       $battleMenu.addEventListener("submit", (event) => {
         const input = event.target["battle-input"].value;
         if (input === "1") {
+          //모험
+          $gameMenu.style.display = "none";
+          $battleMenu.style.display = "block";
+          monster = JSON.parse(
+            JSON.stringify(
+              monsterList[Math.floor(Math.random() * monsterList.length)]
+            )
+          );
+          monster.maxHp = monster.hp;
+          $monsterName.textContent = monster.name;
+          $monsterHp.textContent = `HP: ${monster.hp}/${monster.maxHp}`;
+          $monsterAtt.textContent = `ATT: ${monster.att}`;
         } else if (input === "2") {
         } else if (input === "3") {
         }
+      });
+
+      $battleMenu.addEventListener("submit", (event) => {
+        const input = event.target["battle-input"].value;
       });
     </script>
   </body>
