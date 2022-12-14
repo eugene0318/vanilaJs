@@ -53,6 +53,9 @@
       const colors = ["red", "orange", "yellow", "green", "white", "pink"];
       let colorCopy = colors.concat(colors);
       let shuffled = [];
+      let clicked = [];
+      let completed = [];
+      let clickable = false;
 
       function shuffle() {
         for (let i = 0; colorCopy.length > 0; i += 1) {
@@ -77,10 +80,48 @@
         return card;
       }
 
+      function onClcikCard() {
+        if (!clickable || completed.includes(this) || clicked[0] === this) {
+          //completed.includes(this) : 완성된거 클릭하는거 방지
+          // clicked[0] === this : 나자신을 클릭하는거 방지
+          return;
+        }
+        this.classList.toggle("flipped");
+        clicked.push(this);
+        if (clicked.length !== 2) {
+          return;
+        }
+        const firstBackColor =
+          clicked[0].querySelector(".card-back").style.backgroundColor;
+        const secondsBackColor =
+          clicked[1].querySelector(".card-back").style.backgroundColor;
+        if (firstBackColor === secondsBackColor) {
+          completed.push(clicked[0]);
+          completed.push(completed[1]);
+          clicked = [];
+          if (completed.length !== total) {
+            return;
+          }
+          setTimeout(() => {
+            alert("축하합니다!");
+            resetGame();
+          }, 1000);
+
+          return;
+        }
+        setTimeout(() => {
+          clicked[0].classList.remove("flipped");
+          clicked[1].classList.remove("flipped");
+          clicked = [];
+        }, 1000);
+      }
+
       function startGame() {
+        clickable = false;
         shuffle();
         for (let i = 0; i < total; i += 1) {
           const card = createCard(i);
+          card.addEventListener("click", onClcikCard);
           $wrapper.appendChild(card);
         }
 
@@ -94,9 +135,18 @@
           document.querySelectorAll(".card").forEach((card) => {
             card.classList.remove("flipped");
           });
+          clickable = true;
         }, 5000);
       }
       startGame();
+
+      function resetGame() {
+        $wrapper.innerHTML = "";
+        colorCopy = color.concat(colors);
+        shuffle = [];
+        completed = [];
+        startGame();
+      }
     </script>
   </body>
 </html>
