@@ -58,6 +58,12 @@
         OPENED: 0,
       };
       let data;
+      let openCount = 0;
+      let startTime = new Date();
+      const interval = setInterval(() => {
+        const time = Math.floor((new Date() - startTime) / 1000);
+        $timer.textContent = `${time}초`;
+      }, 1000);
 
       function onSubmit(event) {
         event.preventDefault();
@@ -158,6 +164,44 @@
         mines.includes(data[rowIndex + 1]?.[cellIndex + 1]) && i++;
         return i;
       }
+      function open(rowIndex, cellIndex) {
+        if (data[rowIndex]?.[cellIndex] >= CODE.OPENED) return;
+        const target = $tbody.children[rowIndex]?.children[cellIndex];
+        if (!target) {
+          return;
+        }
+        const count = countMine(rowIndex, cellIndex);
+        target.textContent = count || "";
+        target.className = "opened";
+        data[rowIndex][cellIndex] = count;
+        openCount++;
+        if (openCount === row * cell - mine) {
+          const time = (new Date() - startTime) / 1000;
+          clearinterval(interval);
+          $tbody.removeEventListener("contextmenu", onRightClick);
+          $tbody.removeEventListener("click", onLeftClick);
+          setTimeout(() => {
+            alert(`승리했습니다! ${time}초가 걸렸습니다`);
+          }, 0);
+        }
+        return count;
+      }
+
+      function openAround(rI, cI) {
+        const count = open(rI, cI);
+        setTimeout(() => {
+          if (count === 0) {
+            openAround(rI - 1, cI - 1);
+            openAround(rI - 1, cI);
+            openAround(rI - 1, cI + 1);
+            openAround(rI, cI - 1);
+            openAround(rI, cI + 1);
+            openAround(rI + 1, cI - 1);
+            openAround(rI + 1, cI);
+            openAround(rI + 1, cI + 1);
+          }
+        }, 0);
+      }
 
       function onLeftClick(event) {
         const target = event.target;
@@ -165,10 +209,11 @@
         const cellIndex = event.cellIndex;
         const cellData = data[rowIndex][cellIndex];
         if (cellData === CODE.NORMAL) {
-          const count = countMine(rowIndex, cellIndex);
-          target.textContent = count || "";
-          target.className = "opened";
-          data[rowIndex][cellIndex] = count;
+          openAround(rowIndex, cellIndex);
+          //const count = countMine(rowIndex, cellIndex);
+          //   target.textContent = count || "";
+          //   target.className = "opened";
+          //   data[rowIndex][cellIndex] = count;
         } else if (cellData === CODE.MINE) {
           target.textContent = "펑";
           target.className = "opened";
