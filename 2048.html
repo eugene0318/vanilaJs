@@ -122,7 +122,31 @@
       }
       startGame();
 
-      function moveCells(direction) {}
+      function moveCells(direction) {
+        switch (direction) {
+          case "left":
+            const newData = [[], [], [], []];
+            data.forEach((rowData, i) => {
+              rowData.forEach((cellData, j) => {
+                if (cellData) {
+                  newData[i].push(cellData);
+                }
+              });
+            });
+            console.log(newData)[(1, 2, 3, 4)].forEach((rowData, i) => {
+              [1, 2, 3, 4].forEach((cellData, j) => {
+                data[i][j] = newData[i][j] || 0;
+              });
+            });
+            break;
+          case "right":
+            break;
+          case "up":
+            break;
+          case "down":
+            break;
+        }
+      }
       window.addEventListener("keyup", (event) => {
         if (event.key === "ArrowUp") {
           moveCells("up");
@@ -153,6 +177,25 @@
       //   window.addEventListener("mouseup", (event) => {
       //     console.log("mouseup", event);
       //   });
+      let startCoord;
+      window.addEventListener("mousedown", (event) => {
+        startCoord = [event.clientX, event.clientY];
+      });
+
+      window.addEventListener("mouseup", (event) => {
+        const endCoord = [event.clientX, event.clientY];
+        const diffX = endCoord[0] - startCoord[0];
+        const diffY = endCoord[1] - startCoord[1];
+        if (diffX < 0 && Math.abs(diffX) > Math.abs(diffY)) {
+          moveCells("left");
+        } else if (diffX > 0 && Math.abs(diffX) > Math.abs(diffY)) {
+          moveCells("right");
+        } else if (diffY > 0 && Math.abs(diffX) <= Math.abs(diffY)) {
+          moveCells("down");
+        } else if (diffY < 0 && Math.abs(diffX) <= Math.abs(diffY)) {
+          moveCells("up");
+        }
+      });
     </script>
   </body>
 </html>
